@@ -71,7 +71,7 @@ class Screen2(Screen):
         yield Horizontal(
             VerticalScroll(
                 Label(self.left_project, classes="left-quarter"),
-                Label("By:" + usernames[0].get("alt"), classes="left-quarter-by"),
+                Label("By:" + usernames[0], classes="left-quarter-by"),
                 Static(self.devlog_1, classes="left-quarter-devlog-and-time"),
                 Static(self.time_1, classes="left-quarter-devlog-and-time"),
                 Static(left_description, classes="description"),
@@ -94,7 +94,7 @@ class Screen2(Screen):
             ),
             VerticalScroll(
                 Label(self.right_project, classes="right-quarter"),
-                Label("By:" + usernames[1].get("alt"), classes="right-quarter-by"),
+                Label("By:" + usernames[1], classes="right-quarter-by"),
                 Static(self.devlog_2, classes="right-quarter-devlog-and-time"),
                 Static(self.time_2, classes="right-quarter-devlog-and-time"),
                 Static(right_description, classes="description"),

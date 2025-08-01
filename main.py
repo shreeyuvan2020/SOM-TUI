@@ -38,6 +38,8 @@ def main(driver=None):
     project_name = soup.find_all("h3", {"class": "text-lg md:text-2xl"})
     usernames = []
     usernames = soup.find_all("img", {"class": "w-8 h-8 sm:w-10 sm:h-10 rounded-full mr-2 sm:mr-3"})
+    usernames = set([img['alt'].text.strip() for img in usernames])
+    usernames = list(usernames)
     devlogs_and_time = soup.find_all("span", {"class": "text-gray-800"})
     important_buttons = soup.find_all("a", class_="som-button-primary")
     devlog_1 = devlogs_and_time[0].text.strip() + " devlogs"
