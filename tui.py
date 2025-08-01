@@ -2,6 +2,11 @@ from textual.app import App, ComposeResult, Screen
 from textual.widgets import Static, Input, Label, Button, Link, Header
 from textual.containers import Container, Horizontal, VerticalScroll, Vertical
 from rich.segment import Segment
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from main import main
 from textual.style import Style
 class Screen1(Screen):
@@ -18,7 +23,7 @@ class Screen1(Screen):
 class Screen2(Screen):
     CSS_PATH = "layout.tcss"
     def compose(self) -> ComposeResult:
-        scraper_stuff = main()
+        scraper_stuff = main(driver=self.app.driver)
         self.left_project = scraper_stuff[0]
         self.right_project = scraper_stuff[1]
         self.devlog_1 = scraper_stuff[2]
@@ -139,6 +144,9 @@ class Voting(App):
     SCREENS = {"screen_one": Screen1, "screen_two": Screen2}
 
     def on_mount(self) -> None:
+        chrome_options = Options()
+        chrome_options.add_experimental_option("detach", True)
+        self.driver = webdriver.Chrome(options=chrome_options)
         self.push_screen(Screen1())
 if __name__ == "__main__":
     print("Welcome to the SOM CLI Voting App!")

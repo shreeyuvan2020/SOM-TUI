@@ -6,14 +6,15 @@ import requests
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support import expected_conditions as EC
-def main():
-    chrome_options = Options()
-    chrome_options.add_experimental_option("detach", True)
-    driver = webdriver.Chrome(options=chrome_options)
+def main(driver=None):
+    if driver is None:
+        chrome_options = Options()
+        chrome_options.add_experimental_option("headless", True)
+        driver = webdriver.Chrome(options=chrome_options)
     driver.get("https://summer.hackclub.com")
     with open("som-cookie.txt", "r") as f:
         cookie_value = f.read().strip()
-    driver.add_cookie({"name":"_journey_session", "value": cookie_value})
+    driver.add_cookie({"name": "_journey_session", "value": cookie_value})
     driver.get("https://summer.hackclub.com/votes/new")
     read_stuff = driver.find_elements(By.CSS_SELECTOR, "button.text-nice-blue")
     if read_stuff:
@@ -57,8 +58,7 @@ def main():
     important_stuff = []
     print(left_button, right_button, tie_button)
     wait = WebDriverWait(driver, 10)
-    submit_button_div = (By.CSS_SELECTOR, ".flex.justify-center.items-center.w-full")
-    submit_button = wait.until(EC.element_to_be_clickable(submit_button_div.find_element(By.TAG_NAME, "button")))
+    submit_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button.som-button-primary[type='submit'][name='button']")))
     details = soup.find_all("div", {"class": "text-som-detail"})
     for detail in details:
         spans = detail.find_all("span")
