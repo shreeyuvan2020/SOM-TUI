@@ -18,3 +18,4 @@
 - Paste the cookie value you copied earlier into the text field
 - Start voting!
 - If you want to exit, tap Ctrl+Q
+###Check out the Pypi page at https://pypi.org/project/SOM-TUI/1.3 and star this repo if you like it!
