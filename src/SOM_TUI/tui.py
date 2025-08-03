@@ -145,7 +145,7 @@ class Voting(App):
 
     def on_mount(self) -> None:
         chrome_options = Options()
-        chrome_options.add_experimental_option("detach", True)
+        chrome_options.add_experimental_option("headless", True)
         self.driver = webdriver.Chrome(options=chrome_options)
         self.push_screen(Screen1())
 if __name__ == "__main__":
