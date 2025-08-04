@@ -2,6 +2,7 @@ import selenium
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from selenium.webdriver.support.ui import WebDriverWait
+import time
 import requests
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
@@ -9,12 +10,12 @@ from selenium.webdriver.support import expected_conditions as EC
 def main(driver=None):
     if driver is None:
         chrome_options = Options()
-        chrome_options.add_experimental_option("headless", True)
+        chrome_options.add_experimental_option("detach", True)
         driver = webdriver.Chrome(options=chrome_options)
     driver.get("https://summer.hackclub.com")
     with open("som-cookie.txt", "r") as f:
         cookie_value = f.read().strip()
-    driver.add_cookie({"name": "_journey_session", "value": cookie_value})
+    driver.add_cookie({"name": "_journey_session",  "value": cookie_value})
     driver.get("https://summer.hackclub.com/votes/new")
     read_stuff = driver.find_elements(By.CSS_SELECTOR, "button.text-nice-blue")
     if read_stuff:
@@ -46,9 +47,14 @@ def main(driver=None):
     right_button = button_strip[2].find_element(By.TAG_NAME, "input")
     form_element = driver.find_element(By.ID, "vote_explanation")
     usernames = []
-    usernames = soup.find_all("img", {"class": "w-8 h-8 sm:w-10 sm:h-10 rounded-full mr-2 sm:mr-3"})
-    usernames = set([img['alt'] for img in usernames])
-    usernames = list(usernames)
+    usernames_og = soup.find_all("img", {"class": "w-8 h-8 sm:w-10 sm:h-10 rounded-full mr-2 sm:mr-3"})
+    entire_devlogs = soup.find_all("div", {"class": "px-4 py-8 sm:py-4 bg-[#F6DBBA] sm:rounded-xl"})
+    usernames = []
+    for username in usernames_og:
+        if username not in usernames:
+            usernames.append(username)
+    ai_tags_left = entire_devlogs[0].find("span", {"class": "inline-flex items-center bg-[#FFE8CD] text-som-dark text-xs font-semibold px-2 py-1 rounded-full border border-[#a8956b] shadow-sm"})
+    ai_tags_right = entire_devlogs[1].find("span", {"class": "inline-flex items-center bg-[#FFE8CD] text-som-dark text-xs font-semibold px-2 py-1 rounded-full border border-[#a8956b] shadow-sm"})
     devlogs_and_time = soup.find_all("span", {"class": "text-gray-800"})
     important_buttons = soup.find_all("a", class_="som-button-primary")
     devlog_1 = devlogs_and_time[0].text.strip() + " devlogs"
@@ -74,4 +80,16 @@ def main(driver=None):
             important_stuff.append(string_construct)
     left_stuff = important_stuff[0:num_left_devlogs]
     right_stuff = important_stuff[num_left_devlogs:num_left_devlogs + num_right_devlogs]
-    return [left_project, right_project, devlog_1, time_1, devlog_2, time_2, important_buttons, usernames, left_devlogs, left_stuff, right_stuff, right_devlogs, left_description, right_description, driver, left_button, right_button, tie_button, form_element, submit_button]
+    if ai_tags_left:
+        if ai_tags_left and ai_tags_right:
+            print("Both projects used AI")
+            return [left_project, right_project, devlog_1, time_1, devlog_2, time_2, important_buttons, usernames, left_devlogs, left_stuff, right_stuff, right_devlogs, left_description, right_description, driver, left_button, right_button, tie_button, form_element, submit_button, [True, True]]
+        elif ai_tags_left and not ai_tags_right:
+            print("Left AI tag found, but not right")
+            return [left_project, right_project, devlog_1, time_1, devlog_2, time_2, important_buttons, usernames, left_devlogs, left_stuff, right_stuff, right_devlogs, left_description, right_description, driver, left_button, right_button, tie_button, form_element, submit_button, [True, False]]
+    elif ai_tags_right and not ai_tags_left:
+        print("right ai tag")
+        return [left_project, right_project, devlog_1, time_1, devlog_2, time_2, important_buttons, usernames, left_devlogs, left_stuff, right_stuff, right_devlogs, left_description, right_description, driver, left_button, right_button, tie_button, form_element, submit_button, [False, True]]
+    else:
+        print("No AI tags found")
+        return [left_project, right_project, devlog_1, time_1, devlog_2, time_2, important_buttons, usernames, left_devlogs, left_stuff, right_stuff, right_devlogs, left_description, right_description, driver, left_button, right_button, tie_button, form_element, submit_button, [False, False]]

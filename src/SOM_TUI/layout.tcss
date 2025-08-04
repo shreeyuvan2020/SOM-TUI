@@ -16,6 +16,13 @@
     border: #5e4820;
     width: 50%;
 }
+.used-ai-tag {
+    background: #ffe8cd;
+    color: #a8956b;
+    border: solid #a8956b;
+    text-style: bold;
+    width: auto;
+}
 .left-quarter-by {
     text-style: italic;
     width: 50%;
@@ -35,8 +42,8 @@
     color: #242E3C;
 }
 .left-quarter-devlogs {
-    width: 50%;
-    content-align: center top;
+    width: 32%;
+    content-align: left top;
     color: #4A2E24;
     background: #eeaa57ff;
     border: #E1CAB1;
@@ -92,7 +99,7 @@
     color: #242E3C;
 }
 .right-quarter-devlogs {
-    width: 50%;
+    width: 32%;
     content-align: center top;
     color: #4A2E24;
     background: #eeaa57ff;
