@@ -10,7 +10,7 @@ from selenium.webdriver.support import expected_conditions as EC
 def main(driver=None):
     if driver is None:
         chrome_options = Options()
-        chrome_options.add_experimental_option("detach", True)
+        chrome_options.add_argument("--headless=new")
         driver = webdriver.Chrome(options=chrome_options)
     driver.get("https://summer.hackclub.com")
     with open("som-cookie.txt", "r") as f:
@@ -47,6 +47,20 @@ def main(driver=None):
     right_button = button_strip[2].find_element(By.TAG_NAME, "input")
     form_element = driver.find_element(By.ID, "vote_explanation")
     usernames = []
+    images = []
+    bad_images = soup.find_all("div", {"class":"mt-2 sm:mt-3"})
+    print(bad_images)
+    for image in bad_images:
+        if image.find("img"):
+            img = image.find("img")
+            images.append([img.get("src"), "image"])
+        elif image.find("video"):
+            video = image.find("video")
+            img = video.get("src")
+            if img:
+                images.append([img, "video"])
+
+
     usernames_og = soup.find_all("img", {"class": "w-8 h-8 sm:w-10 sm:h-10 rounded-full mr-2 sm:mr-3"})
     entire_devlogs = soup.find_all("div", {"class": "px-4 py-8 sm:py-4 bg-[#F6DBBA] sm:rounded-xl"})
     usernames = []
@@ -80,16 +94,18 @@ def main(driver=None):
             important_stuff.append(string_construct)
     left_stuff = important_stuff[0:num_left_devlogs]
     right_stuff = important_stuff[num_left_devlogs:num_left_devlogs + num_right_devlogs]
+    left_images = images[0:num_left_devlogs]
+    right_images = images[num_left_devlogs:num_left_devlogs + num_right_devlogs]
     if ai_tags_left:
         if ai_tags_left and ai_tags_right:
             print("Both projects used AI")
-            return [left_project, right_project, devlog_1, time_1, devlog_2, time_2, important_buttons, usernames, left_devlogs, left_stuff, right_stuff, right_devlogs, left_description, right_description, driver, left_button, right_button, tie_button, form_element, submit_button, [True, True]]
+            return [left_project, right_project, devlog_1, time_1, devlog_2, time_2, important_buttons, usernames, left_devlogs, left_stuff, right_stuff, right_devlogs, left_description, right_description, driver, left_button, right_button, tie_button, form_element, submit_button, [True, True], left_images, right_images]
         elif ai_tags_left and not ai_tags_right:
             print("Left AI tag found, but not right")
-            return [left_project, right_project, devlog_1, time_1, devlog_2, time_2, important_buttons, usernames, left_devlogs, left_stuff, right_stuff, right_devlogs, left_description, right_description, driver, left_button, right_button, tie_button, form_element, submit_button, [True, False]]
+            return [left_project, right_project, devlog_1, time_1, devlog_2, time_2, important_buttons, usernames, left_devlogs, left_stuff, right_stuff, right_devlogs, left_description, right_description, driver, left_button, right_button, tie_button, form_element, submit_button, [True, False], left_images, right_images]
     elif ai_tags_right and not ai_tags_left:
         print("right ai tag")
-        return [left_project, right_project, devlog_1, time_1, devlog_2, time_2, important_buttons, usernames, left_devlogs, left_stuff, right_stuff, right_devlogs, left_description, right_description, driver, left_button, right_button, tie_button, form_element, submit_button, [False, True]]
+        return [left_project, right_project, devlog_1, time_1, devlog_2, time_2, important_buttons, usernames, left_devlogs, left_stuff, right_stuff, right_devlogs, left_description, right_description, driver, left_button, right_button, tie_button, form_element, submit_button, [False, True], left_images, right_images]
     else:
         print("No AI tags found")
-        return [left_project, right_project, devlog_1, time_1, devlog_2, time_2, important_buttons, usernames, left_devlogs, left_stuff, right_stuff, right_devlogs, left_description, right_description, driver, left_button, right_button, tie_button, form_element, submit_button, [False, False]]
+        return [left_project, right_project, devlog_1, time_1, devlog_2, time_2, important_buttons, usernames, left_devlogs, left_stuff, right_stuff, right_devlogs, left_description, right_description, driver, left_button, right_button, tie_button, form_element, submit_button, [False, False], left_images, right_images]

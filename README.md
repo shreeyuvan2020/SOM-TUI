@@ -7,6 +7,10 @@
 - Uses Selenium and Beautiful Soup for web scraping
 - Gets cookies from the user by asking for them
 
+# Prerequisites
+- Have Chrome Installed
+- If it doesn't work because the driver crashed, download the latest chrome version here: https://developer.chrome.com/docs/chromedriver/downloads
+
 ## Usage:
 ### pip (Recommended)
 - Go into devtools in your browser while at summer.hackclub.com/campfire after signing in

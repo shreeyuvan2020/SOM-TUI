@@ -8,7 +8,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from SOM_TUI.main import main
+import requests
 from textual.style import Style
+from PIL import Image
+from io import BytesIO
+import subprocess
+import mpv
+from rich_pixels import Pixels
+from rich.console import Console
 class Screen1(Screen):
     CSS_PATH = "landing.tcss"
     print("hi")
@@ -45,28 +52,54 @@ class Screen2(Screen):
         self.feedback_form = scraper_stuff[18]
         self.submit_button = scraper_stuff[19]
         self.ai_tags = scraper_stuff[20]
-        # Extract demo and repo links
         self.demo_1 = important_buttons[0].get("href") if len(important_buttons) > 0 else ""
         self.repo_1 = important_buttons[1].get("href") if len(important_buttons) > 1 else ""
         self.demo_2 = important_buttons[2].get("href") if len(important_buttons) > 2 else ""
         self.repo_2 = important_buttons[3].get("href") if len(important_buttons) > 3 else ""
+        self.left_images = scraper_stuff[21]
+        self.right_images = scraper_stuff[22]
         # Devlog widgets
-        self.left_devlog_widgets = [
-            Static(
-                f"[b]{left_stuff[i]}[/b]\n{left_devlogs[i].text.strip()}",
-                classes="left-quarter-devlogs"
+        self.left_devlog_widgets = []
+        for i in range(len(left_devlogs)):
+            widgets = []
+            widgets.append(
+                Static(
+                    f"[b]{left_stuff[i]}[/b]\n{left_devlogs[i].text.strip()}",
+                    classes="left-quarter-devlogs"
+                )
             )
-            for i in range(len(left_devlogs))
-        ]
-        self.right_devlog_widgets = [
-            Static(
-                f"[b]{right_stuff[i].strip()}[/b]\n{right_devlogs[i].text.strip()}".replace("•", ""),
-                classes="right-quarter-devlogs"
+            if i < len(self.left_images) and self.left_images[i][1] == "image":
+                image = Image.open(BytesIO(requests.get(self.left_images[i][0]).content))
+                image = image.resize((176, 20))
+                widgets.append(Static(Pixels.from_image(image)))
+            else:
+                widgets.append(Link(
+                    "Download Link for Devlog Video",
+                    classes="left-quarter-demo",
+                    url=self.left_images[i][0]
+                ))
+            self.left_devlog_widgets.extend(widgets)
+
+        self.right_devlog_widgets = []
+        for i in range(len(right_devlogs)):
+            widgets = []
+            widgets.append(
+                Static(
+                    f"[b]{right_stuff[i].strip()}[/b]\n{right_devlogs[i].text.strip()}".replace("•", ""),
+                    classes="right-quarter-devlogs"
+                )
             )
-            for i in range(len(right_devlogs))
-        ]
-        # Removed redundant yield Horizontal( block that was not closed
-        # Compose the main horizontal layout with all widgets
+            if i < len(self.right_images) and self.right_images[i][1] == "image":
+                image = Image.open(BytesIO(requests.get(self.right_images[i][0]).content))
+                image = image.resize((176, 20))
+                widgets.append(Static(Pixels.from_image(image)))
+            else:
+                widgets.append(Button(
+                    "Download Link for Devlog Video",
+                    url=self.right_images[i][0],
+                    classes="right-quarter-demo"
+                ))
+            self.right_devlog_widgets.extend(widgets)
         yield Horizontal(
             VerticalScroll(
                 Label(self.left_project, classes="left-quarter"),
@@ -146,7 +179,7 @@ class Voting(App):
 
     def on_mount(self) -> None:
         chrome_options = Options()
-        chrome_options.add_experimental_option("detach", True)
+        chrome_options.add_argument("--headless=new")
         self.driver = webdriver.Chrome(options=chrome_options)
         self.push_screen(Screen1())
 if __name__ == "__main__":

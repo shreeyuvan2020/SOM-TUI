@@ -42,7 +42,7 @@
     color: #242E3C;
 }
 .left-quarter-devlogs {
-    width: 32%;
+    width: 50%;
     content-align: left top;
     color: #4A2E24;
     background: #eeaa57ff;
@@ -99,7 +99,7 @@
     color: #242E3C;
 }
 .right-quarter-devlogs {
-    width: 32%;
+    width: 50%;
     content-align: center top;
     color: #4A2E24;
     background: #eeaa57ff;
@@ -128,4 +128,14 @@
 .vote-success {
     background: green;
     text-style: bold;
+}
+.play-video-button {
+    background: #ffcccb;
+    color: #000000;
+    border: solid #ff0000;
+    padding: 2;
+    text-style: bold;
+    content-align: center middle;
+    width: 50;
+    height: 50;
 }
